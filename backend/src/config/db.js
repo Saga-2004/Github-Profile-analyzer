@@ -60,12 +60,24 @@ async function connectDB() {
         most_starred_repo VARCHAR(300),
         most_forked_repo VARCHAR(300),
         repo_topics JSON,
+        repositories JSON,
         account_created_at DATETIME,
         github_updated_at DATETIME,
         analyzed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       );
     `;
     await pool.query(createTableSql);
+
+      // Ensure repositories column exists for existing tables
+      const [rows] = await pool.query(`
+        SELECT COUNT(*) as count FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'github_profiles' AND COLUMN_NAME = 'repositories'`
+      );
+      const count = rows[0].count;
+      if (count === 0) {
+        await pool.query('ALTER TABLE github_profiles ADD COLUMN repositories JSON');
+        console.log('✅ Added repositories column to existing table');
+      }
 
     return pool;
   } catch (error) {

@@ -1,5 +1,150 @@
 # GitHub Profile Analyzer API
 
+## 📖 Overview
+A **production‑ready** Node.js + Express backend that analyzes any public GitHub user profile, computes deep repository statistics, and stores the results in a MySQL database. The service is built with clean architecture principles, a thin dependency surface, and zero reliance on heavyweight ORMs, making it an ideal learning project for junior developers.
+
+---
+
+## 🚀 Key Features
+- **GitHub API Integration** – fetches profile metadata and full repository list with Axios.
+- **Automatic DB Provisioning** – creates the `github_analyzer` database and `github_profiles` table (including a JSON `repositories` column) on first run.
+- **Repository Analytics Engine** – aggregates total stars, forks, top languages, most‑starred/forked repos, and unique topics.
+- **Upsert Logic** – `INSERT … ON DUPLICATE KEY UPDATE` ensures a profile is stored idempotently.
+- **Robust Validation** – `express-validator` guarantees well‑formed usernames and sanitises inputs.
+- **Security Hardened** – `helmet`, `cors`, and environment‑based secret handling.
+- **Health Endpoint** – simple `/health` check exposing uptime and DB connectivity.
+- **Full‑Text JSON Column** – stores the complete repository array in MySQL for later analysis.
+
+---
+
+## 🛠️ Tech Stack
+- **Runtime:** Node.js 18+
+- **Framework:** Express 4
+- **Database:** MySQL 8 (using `mysql2/promise` connection pool)
+- **HTTP Client:** Axios
+- **Validation:** express-validator
+- **Security:** helmet, cors
+- **Environment Management:** dotenv
+- **Development:** nodemon, concurrently (for running backend & frontend together)
+
+---
+
+## 📋 Prerequisites
+- **Node.js** ≥ 18
+- **MySQL** ≥ 8 (local or remote instance)
+- (Optional) **GitHub Personal Access Token** – raises API rate limits from 60→5 000 requests per hour.
+
+---
+
+## ⚙️ Setup Instructions
+1. **Clone the repository** (if you haven't already) and navigate to the backend folder:
+   ```bash
+   cd github-profile-analyzer/backend
+   ```
+2. **Create environment file**:
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and fill in your credentials:
+   ```env
+   PORT=3000
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=your_mysql_password
+   GITHUB_TOKEN=your_github_pat   # optional
+   ```
+3. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+4. **Run the server** (development mode with hot‑reloading):
+   ```bash
+   npm run dev
+   ```
+   The server will automatically:
+   - Connect to MySQL.
+   - Create the `github_analyzer` database if missing.
+   - Create the `github_profiles` table with the `repositories` JSON column.
+   - Start listening on the port defined in `.env`.
+
+---
+
+## 🌐 API Reference
+### Health Check
+```
+GET /health
+```
+Returns service status, timestamp, and uptime.
+
+### Analyze Profile
+```
+POST /api/profiles/analyze
+Content-Type: application/json
+Body: { "username": "octocat" }
+```
+Fetches data from GitHub, computes analytics, upserts the record, and returns the full stored profile (including a `repositories` array).
+
+### List Profiles
+```
+GET /api/profiles?sort=followers&limit=10&search=tor
+```
+Supports sorting (`followers`, `public_repos`, `total_stars`, `analyzed_at`), limiting, and case‑insensitive username search.
+
+### Get Single Profile
+```
+GET /api/profiles/:username
+``` 
+Returns the stored profile for the given username.
+
+### Delete Profile
+```
+DELETE /api/profiles/:username
+``` 
+Removes a profile from the database.
+
+---
+
+## 🧪 Testing
+The project includes a basic Jest test suite for the service layer.
+```bash
+npm run test
+```
+Feel free to extend tests for controllers, middleware, and DB helpers.
+
+---
+
+## 🤝 Contributing
+1. Fork the repo and create a feature branch.
+2. Follow the existing code style (ESLint + Prettier).
+3. Write tests for new functionality.
+4. Submit a Pull Request with a clear description of the change.
+
+---
+
+## 📜 License
+MIT © 2026 Your Name
+
+---
+
+## 📐 Architecture Diagram
+> *(Add an architecture diagram image `docs/architecture.png` to the repo and reference it here.)*
+
+```mermaid
+graph LR
+  subgraph Frontend
+    FE[React + Vite]
+  end
+  subgraph Backend
+    BE[Express API]
+    DB[(MySQL)]
+  end
+  FE -->|/api| BE --> DB
+```
+
+---
+
+*This README is designed to be clear, visually appealing, and helpful for developers of all levels joining the project.*
+
 A robust, production-quality Node.js and Express backend service designed to analyze GitHub user profiles, compute repository statistics, and store deep profile insights inside a MySQL database using raw SQL queries.
 
 This backend serves as a clean, modular example of standard Node.js development practices without the reliance on bulky ORMs (like Sequelize or Prisma), featuring automatic database schema provisioning, robust security, strict payload validation, and defensive API integration logic.
