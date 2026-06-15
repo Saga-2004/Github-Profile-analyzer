@@ -9,22 +9,21 @@ const profileController = require('./controllers/profileController');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  'https://github-profile-analyzer-pink-nu.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
+];
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL,
-    'http://localhost:5173'
-  ],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type']
 }));
 
 // Security and parsing middleware
 app.use(helmet());
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type']
-}));
 app.use(express.json());
 
 // Custom request logger middleware matching exact requirements
