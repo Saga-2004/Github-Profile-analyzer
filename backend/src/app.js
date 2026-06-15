@@ -9,6 +9,15 @@ const profileController = require('./controllers/profileController');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://github-profile-analyzer.vercel.app'  // add your vercel URL
+  ],
+  methods: ['GET', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type']
+}));
+
 // Security and parsing middleware
 app.use(helmet());
 app.use(cors({
