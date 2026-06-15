@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors({
   origin: [
-    'http://localhost:5173',
-    'https://github-profile-analyzer.vercel.app'  // add your vercel URL
+    process.env.FRONTEND_URL,
+    'http://localhost:5173'
   ],
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type']
